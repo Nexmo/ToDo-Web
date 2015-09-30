@@ -1,0 +1,25 @@
+<div class="container">
+    <form method="post" action="/app/add">
+        <div class="input-group">
+            <input type="text" class="form-control" name="item" placeholder="Remember the milk...">
+            <span class="input-group-btn">
+                <input class="btn btn-primary" type="submit" value="Add">
+            </span>
+        </div>
+    </form>
+</div>
+<br>
+<div class="container">
+    <ul class="list-group">
+    <?php foreach ($this->items as $item): ?>
+        <li class="list-group-item">
+            <form method="post" action="/app/delete" style="display: inline">
+                <input type="hidden" name="id" value="<?php echo $item->getObjectId()?>" />
+                <input class="btn btn-danger btn-xs" type="submit" value="Delete">
+            </form>
+            <?php echo $this->escapeHtml($item->get('todoItem')) ?>
+            <span class="badge"><?php echo $this->escapeHtml($item->getCreatedAt()->format('m/d/y h:i:s')) ?></span>
+        </li>
+    <?php endforeach; ?>
+    </ul>
+</div>

@@ -1,0 +1,17 @@
+{
+  "name": "nexmo/todo_web_demo",
+  "description": "Todo List Verify Demo",
+  "minimum-stability": "dev",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Tim Lytle",
+      "email": "tim@nexmo.com"
+    }
+  ],
+  "require": {
+    "parse/php-sdk": "^1.1@dev",
+    "fillup/nexmo": "dev-master",
+    "zendframework/zendframework": "~2.5"
+  }
+}
