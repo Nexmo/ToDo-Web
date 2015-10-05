@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "059f4dbf30a6e8c89256d9d15f461e82",
+    "hash": "12e52f7f1b5e3da968c9877ee3a585cc",
     "packages": [
         {
             "name": "doctrine/instantiator",
@@ -62,16 +62,16 @@
         },
         {
             "name": "fillup/nexmo",
-            "version": "dev-bugfix-verify-params",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/tjlytle/nexmo.git",
-                "reference": "352b83deca0917450067fbe8e07eadf72631f022"
+                "url": "https://github.com/fillup/nexmo.git",
+                "reference": "f120b2093b89f408544c5bde3a86d15884906f15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tjlytle/nexmo/zipball/352b83deca0917450067fbe8e07eadf72631f022",
-                "reference": "352b83deca0917450067fbe8e07eadf72631f022",
+                "url": "https://api.github.com/repos/fillup/nexmo/zipball/f120b2093b89f408544c5bde3a86d15884906f15",
+                "reference": "f120b2093b89f408544c5bde3a86d15884906f15",
                 "shasum": ""
             },
             "require": {
@@ -86,6 +86,7 @@
                     "Nexmo\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -96,10 +97,7 @@
                 }
             ],
             "description": "Nexmo API client built with Guzzle Web Service descriptions",
-            "support": {
-                "source": "https://github.com/tjlytle/nexmo/tree/bugfix-verify-params"
-            },
-            "time": "2015-10-02 19:44:43"
+            "time": "2015-10-02 20:52:04"
         },
         {
             "name": "guzzlehttp/command",
@@ -860,12 +858,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4ecd63c4e88c8eb77d8a93e76e3c5936ec5c3a04"
+                "reference": "def76118e77076fd6ff1d3a96d890115dd0a1ed0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4ecd63c4e88c8eb77d8a93e76e3c5936ec5c3a04",
-                "reference": "4ecd63c4e88c8eb77d8a93e76e3c5936ec5c3a04",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/def76118e77076fd6ff1d3a96d890115dd0a1ed0",
+                "reference": "def76118e77076fd6ff1d3a96d890115dd0a1ed0",
                 "shasum": ""
             },
             "require": {
@@ -924,7 +922,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-10-02 08:18:49"
+            "time": "2015-10-05 09:51:25"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -4375,14 +4373,7 @@
         }
     ],
     "packages-dev": [],
-    "aliases": [
-        {
-            "alias": "dev-master",
-            "alias_normalized": "9999999-dev",
-            "version": "dev-bugfix-verify-params",
-            "package": "fillup/nexmo"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
         "parse/php-sdk": 20,

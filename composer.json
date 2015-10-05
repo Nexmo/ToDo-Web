@@ -9,16 +9,10 @@
       "email": "tim@nexmo.com"
     }
   ],
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/tjlytle/nexmo.git"
-    }
-  ],
   "require": {
     "parse/php-sdk": "^1.1@dev",
     "zendframework/zendframework": "~2.5",
-    "fillup/nexmo": "dev-bugfix-verify-params as dev-master",
+    "fillup/nexmo": "dev-master",
     "guzzlehttp/guzzle-services": "0.5.0",
     "guzzlehttp/command":  "0.7.1"
   }
