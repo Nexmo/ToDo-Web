@@ -9,6 +9,8 @@ class AuthController extends AbstractActionController
 {
     public function signinAction()
     {
+        ParseUser::logOut();
+
         if(!($this->request instanceof Request) OR !$this->request->isPost()){
             return; //nothing to do
         }
