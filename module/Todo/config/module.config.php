@@ -36,7 +36,8 @@ return [
         'template_map' => [
             'todo/auth/signin' => __DIR__ . '/../view/signin.phtml',
             'todo/auth/signup' => __DIR__ . '/../view/signup.phtml',
-            'todo/app/index'   => __DIR__ . '/../view/index.phtml'
+            'todo/auth/forgot'   => __DIR__ . '/../view/forgot.phtml',
+            'todo/app/index'   => __DIR__ . '/../view/index.phtml',
         ]
     ]
 ];

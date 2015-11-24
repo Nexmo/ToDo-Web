@@ -34,9 +34,11 @@ $flash->setMessageOpenFormat('<div%s>
 
 <body>
     <?php $errors = $this->flashMessenger()->render('error', array('alert', 'alert-dismissible', 'alert-danger')); ?>
-    <?php if($errors): ?>
+    <?php $info = $this->flashMessenger()->render('info', array('alert', 'alert-dismissible', 'alert-success')); ?>
+    <?php if($errors OR $info): ?>
     <div class="container">
         <?php echo $errors ?>
+        <?php echo $info ?>
     </div>
     <?php endif; ?>
     <?php echo $this->content; ?>
