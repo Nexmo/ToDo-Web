@@ -1,0 +1,15 @@
+<?php
+//copy this file to local.php, and add your Parse and Nexmo credentials
+//or run php ./bin/setup_config.php
+
+return [
+    'parse' => [
+        'app_id'     => '',
+        'rest_key'   => '',
+        'master_key' => '',
+    ],
+    'nexmo' => [
+        'api_key'    => '',
+        'api_secret' => ''
+    ]
+];
