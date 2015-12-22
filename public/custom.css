@@ -38,6 +38,7 @@ body {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
+    margin-bottom: -1px;
 }
 .form-signin .last {
     margin-bottom: 10px;
