@@ -1,5 +1,5 @@
 <?php
-namespace Todo\Controller;
+namespace Todo;
 
 use Parse\ParseException;
 use Parse\ParseObject;

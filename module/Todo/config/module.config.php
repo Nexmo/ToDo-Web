@@ -7,7 +7,7 @@ return [
                 'options' => [
                     'route' => '/auth[/:action]',
                     'defaults' => [
-                        'controller' => 'Todo\Controller\Auth',
+                        'controller' => 'Todo\AuthController',
                         'action' => 'signup'
                     ]
                 ],
@@ -18,7 +18,7 @@ return [
                 'options' => [
                     'route' => '/[app][/:action]',
                     'defaults' => [
-                        'controller' => 'Todo\Controller\App',
+                        'controller' => 'Todo\AppController',
                         'action' => 'index'
                     ]
                 ],
@@ -28,8 +28,8 @@ return [
     ],
     'controllers' => [
         'invokables' => [
-            'Todo\Controller\Auth' => 'Todo\Controller\AuthController',
-            'Todo\Controller\App' => 'Todo\Controller\AppController'
+            'Todo\AuthController' => 'Todo\AuthController',
+            'Todo\AppController' => 'Todo\AppController'
         ]
     ],
     'view_manager' => [

@@ -2,7 +2,7 @@
   "name": "nexmo/todo_web_demo",
   "description": "Todo List Verify Demo",
   "minimum-stability": "dev",
-  "license": "proprietary",
+  "license": "mit",
   "authors": [
     {
       "name": "Tim Lytle",
@@ -15,5 +15,13 @@
     "fillup/nexmo": "dev-master",
     "guzzlehttp/guzzle-services": "0.5.0",
     "guzzlehttp/command":  "0.7.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Todo\\": "module/Todo/src"
+    },
+    "classmap": [
+      "module/Todo/Module.php"
+    ]
   }
 }

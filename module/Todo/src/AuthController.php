@@ -1,5 +1,5 @@
 <?php
-namespace Todo\Controller;
+namespace Todo;
 use Parse\ParseException;
 use Parse\ParseUser;
 use Zend\Http\Request;
