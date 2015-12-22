@@ -26,6 +26,7 @@ class AuthController extends AbstractActionController
 
         try {
             $user->signUp();
+            $_SESSION['todo']['user'] = $user->getUsername();
             $this->redirect()->toRoute('app');
         } catch (ParseException $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
@@ -47,6 +48,7 @@ class AuthController extends AbstractActionController
 
         try {
             $user = ParseUser::logIn($this->request->getPost('email'), $this->request->getPost('password'));
+            $_SESSION['todo']['user'] = $user->getUsername();
             $this->redirect()->toRoute('app');
         } catch (ParseException $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());

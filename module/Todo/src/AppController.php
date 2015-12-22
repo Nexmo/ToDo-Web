@@ -29,7 +29,7 @@ class AppController extends AbstractActionController
     public function dispatch(Request $request, Response $response = null)
     {
         $this->user = ParseUser::getCurrentUser();
-        if(!$this->user){
+        if(!$this->user OR !isset($_SESSION['todo']['user']) OR $this->user->getUsername() !== $_SESSION['todo']['user']){
             return $this->redirect()->toRoute('auth', ['action' => 'signin']);
         }
 
