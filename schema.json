@@ -1,0 +1,55 @@
+[{
+   "className": "_User",
+   "fields": {
+     "ACL": {
+       "type": "ACL"
+     },
+     "authData": {
+       "type": "Object"
+     },
+     "createdAt": {
+       "type": "Date"
+     },
+     "email": {
+       "type": "String"
+     },
+     "emailVerified": {
+       "type": "Boolean"
+     },
+     "objectId": {
+       "type": "String"
+     },
+     "password": {
+       "type": "String"
+     },
+     "updatedAt": {
+       "type": "Date"
+     },
+     "username": {
+       "type": "String"
+     }
+   }
+ }, {
+   "className": "ToDo",
+   "fields": {
+     "ACL": {
+       "type": "ACL"
+     },
+     "createdAt": {
+       "type": "Date"
+     },
+     "objectId": {
+       "type": "String"
+     },
+     "todoItem": {
+       "type": "String"
+     },
+     "updatedAt": {
+       "type": "Date"
+     },
+     "user": {
+       "type": "Pointer",
+       "targetClass": "_User"
+     }
+   }
+ }]

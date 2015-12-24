@@ -29,7 +29,8 @@ return [
     'controllers' => [
         'invokables' => [
             'Todo\AuthController' => 'Todo\AuthController',
-            'Todo\AppController' => 'Todo\AppController'
+            'Todo\AppController' => 'Todo\AppController',
+            'Todo\SetupController' => 'Todo\SetupController'
         ]
     ],
     'view_manager' => [
@@ -38,6 +39,20 @@ return [
             'todo/auth/signup' => __DIR__ . '/../view/signup.phtml',
             'todo/auth/forgot'   => __DIR__ . '/../view/forgot.phtml',
             'todo/app/index'   => __DIR__ . '/../view/index.phtml',
+        ]
+    ],
+    'console' => [
+        'router' => [
+            'routes' => [
+                'setup' => [
+                    'options' => [
+                        'route'    => 'setup [parse|config]:action',
+                        'defaults' => [
+                            'controller' => 'Todo\SetupController',
+                        ]
+                    ]
+                ]
+            ]
         ]
     ]
 ];
