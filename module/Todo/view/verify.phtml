@@ -1,0 +1,9 @@
+<div class="container">
+    <form class="form-signin" method="post" action="<?php echo $this->url ?>">
+        <h2 class="form-signin-heading"><?php echo $this->escapeHtml($this->prompt) ?></h2>
+        <p>Enter the code that was sent to your phone.</p>
+        <label for="code" class="sr-only">Code</label>
+        <input type="text" id="code" name="code" class="form-control first" placeholder="1234" required autofocus>
+        <button class="btn btn-lg btn-primary btn-block last" type="submit">Confirm</button>
+    </form>
+</div>
