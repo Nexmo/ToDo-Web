@@ -3,7 +3,7 @@
 ## Introduction
 Almost every web developer has built a login page, and probably more than one. To show how to protect a login with phone 
 number powered second factor authentication (2FA), we'll walk through the process of adding Nexmo's Verify API to an 
-exsisting web application.
+existing web application.
 
 Our web application is a simple todo list. All the application data, and even the login, is powered by Parse. That 
 will allow us to focus on the code that powers 2FA and abstract away the code needed to persist todo items and store 
@@ -301,7 +301,7 @@ see the signup form and can start again. In either case the error will also be d
 
 ## Protecting Signin 
 Now that users have a verified phone number on their account, we can enable second factor authentication on signin. 
-Since we're using the `signingAction()` as a cheap way to do sign users out of the application, we have to relocate the 
+Since we're using the `signinAction()` as a cheap way to do sign users out of the application, we have to relocate the 
 rather aggressive `ParseUser::logout()` so it doesn't logout users that are in the middle of a verification process. 
 If there's a Parse user and `$_SESSION['todo']['user']` has the same username, we need to sign the user out. Any other 
 condition is an inprocess signin.
