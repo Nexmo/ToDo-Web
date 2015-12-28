@@ -72,20 +72,35 @@ class AuthController extends AbstractActionController
      */
     public function signinAction()
     {
-        ParseUser::logOut();
+        if($user = ParseUser::getCurrentUser() AND $_SESSION['todo']['user'] == $user->getUsername()){
+            ParseUser::logOut();
+            $_SESSION['todo']['user'] = null;
+        }
 
         if(!($this->request instanceof Request) OR !$this->request->isPost()){
-            return; //nothing to do
+            return $this->showVerifyIfNeeded();
         }
 
-        try {
-            $user = ParseUser::logIn($this->request->getPost('email'), $this->request->getPost('password'));
-            $_SESSION['todo']['user'] = $user->getUsername();
-            $this->redirect()->toRoute('app');
-        } catch (ParseException $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
-            $this->redirect()->toRoute('auth', ['action' => 'signin']);
+        if(!$this->request->getPost('code')){
+            try {
+                $user = ParseUser::logIn($this->request->getPost('email'), $this->request->getPost('password'));
+                $_SESSION['todo']['user'] = null;
+            } catch (ParseException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+                return $this->redirect()->toRoute('auth', ['action' => 'signin']);
+            }
+
+            $this->startVerification($user->get('phoneNumber'));
+            return $this->redirect()->toRoute('auth', ['action' => 'signin']);
         }
+
+        if(!$this->checkCode($this->request->getPost('code'))){
+            return $this->redirect()->toRoute('auth', ['action' => 'signin']);
+        }
+
+        $user = ParseUser::getCurrentUser();
+        $_SESSION['todo']['user'] = $user->getUsername();
+        $this->redirect()->toRoute('app');
     }
 
     /**
