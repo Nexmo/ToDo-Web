@@ -11,6 +11,8 @@ use Zend\Stdlib\ResponseInterface as Response;
 
 class AppController extends AbstractActionController
 {
+    use VerifyTrait;
+
     const PARSE_CLASS = 'ToDo';
 
     /**
@@ -43,6 +45,10 @@ class AppController extends AbstractActionController
      */
     public function indexAction()
     {
+        if($view = $this->showVerifyIfNeeded()){
+            return $view;
+        }
+
         $query = new ParseQuery(self::PARSE_CLASS);
         $query->equalTo('user', $this->user);
 
@@ -86,12 +92,22 @@ class AppController extends AbstractActionController
             return; //nothing to do
         }
 
-        $query = new ParseQuery(self::PARSE_CLASS);
-        try {
-            $item = $query->get($this->request->getPost('id'));
-            $item->destroy();
-        } catch (ParseException $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
+        if(!$this->request->getPost('code')){
+            $_SESSION['todo']['delete'] = $this->request->getPost('id');
+            $this->startVerification($this->user->get('phoneNumber'), '/app/delete');
+            $this->redirect()->toRoute('app');
+        }
+
+        $code = $this->request->getPost('code');
+        if($this->checkCode($code)){
+            $query = new ParseQuery(self::PARSE_CLASS);
+            try {
+                $item = $query->get($_SESSION['todo']['delete']);
+                $item->destroy();
+                $_SESSION['todo']['delete'] = null;
+            } catch (ParseException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
         }
 
         $this->redirect()->toRoute('app');
