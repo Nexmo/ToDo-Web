@@ -28,15 +28,22 @@ accounts and authenticating (the [`AuthController`][auth]). Parse is really doin
     $user = new ParseUser();
     $user->setUsername($email);
     $user->setPassword($password);
+    
+[*View in Context*][parse_create]
 
 Logging them in:
 
     $user = ParseUser::logIn($this->request->getPost('email'), $this->request->getPost('password'));
     $_SESSION['todo']['user'] = $user->getUsername();
     
+
+[*View in Context*][parse_login]
+
 Then redirecting to the `AppController`:
 
      $this->redirect()->toRoute('app');
+     
+[*View in Context*][redirect]
      
 You can take a look at the entire [`AuthController`][auth] before 2FA is added.
 
@@ -63,7 +70,9 @@ the bootstrap borrowed markup, we just add another input element:
     <label for="phone" class="sr-only">Phone Number</label>
     <input type="text" id="phone" name="phone" class="form-control" placeholder="Phone Number" required>
 
-Now in the [`AuthController`][auth] we need to delay creating the user until they've verified the phone number they 
+[*View in Context*][signup_template]
+
+Now in the [`AuthController`][auth_commit] we need to delay creating the user until they've verified the phone number they 
 provided, and we've checked that the number is unique to their account. Verifying ownership of the phone number is where
 we start using Nexmo's Verify API. 
 
@@ -87,12 +96,16 @@ Checking the POST data for a `code` parameter is a simple way to determine which
 there is no `code` parameter, we'll assume this is the initial request with all the user data. 
 
     if(!$this->request->getPost('code')){
+    
+[*View in Context*][signup_conditional]
 
 Because we're delaying the creation of the user until the number is verified the user's data can be stored in the 
 `$_SESSION` for now.
     
     $_SESSION['signup']['email'] = $this->request->getPost('email');
     $_SESSION['signup']['password'] = $this->request->getPost('password');
+
+[*View in Context*][signup_session]
 
 We need to ensure that the number is in international format before verifying it. We can use Nexmo's Number Insight API 
 to do that, so we'll grab the NI client library from the service locator. Nexmo's Number Insight API makes it easy to 
@@ -110,6 +123,8 @@ we'll set that to `US`; however, it could be dynamically determined based on the
     } else {
         $_SESSION['signup']['phone'] = $this->request->getPost('phone');
     }
+
+[*View in Context*][signup_ni]
 
 If for some reason we don't get an internationally formatted number back from the Number Insight API, we'll fallback to 
 the number the user provided.
@@ -156,8 +171,10 @@ inheritance, or wrap it in a standalone object that can be reused.
         use VerifyTrait;
         //...
 
+[*View in Context*][use_trait]
+
 To start things off, we'll move the code that fetches a Verify client library in the `onDispatch()` method. If you're 
-following along, just [grab the full trait code][trait] and remove all but the `onDispatch()` method.
+following along, just [grab the full trait code][trait] and remove all but the [`onDispatch()` method][trait_dispatch].
 
 We'll create a `startVerification()` to start the verification process, and a `verifyPrompt()` method to 
 display the confirmation form. `startVerification()` is just the code we had added to the `signupAction()`. But since we 
@@ -179,6 +196,8 @@ will only be relevant for a single verification request, so we allow an optional
         $_SESSION['verify']['url'] = $url;
         $_SESSION['verify']['request'] = $response['request_id'];
     }
+    
+[*View in Context*][startVerification]
 
 The `verifyPrompt()` method is rather simple. By default, ZendFramework just renders the view template that matches 
 the name of the controller's action. `verifyPrompt()` sets up a custom template that [prompts the user for a 
@@ -194,6 +213,8 @@ code][verify_template]. It can also allow us to customize the prompt.
         $view->setTemplate('verify');
         return $view;
     }
+    
+[*View in Context*][verifyPrompt]
 
 Now that we've abstracted the common functionality, we can add a few lines to the `signupAction()`, starting the 
 verification process, and prompting the user for the verification code they were sent.
@@ -225,6 +246,8 @@ ID, and if that request is currently in progress, return the verification prompt
             }
         }
     }
+    
+[*View in Context*][showVerifyIfNeeded]
 
 Like `verifyPrompt()` we allow a custom prompt. We also use the Verify API to search for a verification by ID, so we 
 can check the status. The verification prompt will only be returned for verifications that are in progress. Those are 
@@ -239,11 +262,16 @@ signup form. Now we return the verification prompt if we're in the middle of a v
         return $this->showVerifyIfNeeded();
     }
     
+[*View in Context*][signup_show]
+    
 On the initial POST to the `signupAction()` to create the user, once the verification process is started we redirect 
 back to the same action. If the verification was successfully started the prompt will be displayed. If it was not, the 
 error was passed to the user in the flash messenger, and will be displayed after the redirect. 
     
+    $this->startVerification($_SESSION['signup']['phone']);
     return $this->redirect()->toRoute('auth', ['action' => 'signup']);
+    
+[*View in Context*][signup_verify]
     
 Now that we have a pretty robust and reusable way to start the verification process, we need to check the code the user
 submits and if it is correct, create the user's account. The conditional code we added to start the verification process
@@ -253,6 +281,8 @@ is skipped when the user submits a `code`.
         //...
         return $this->redirect()->toRoute('auth', ['action' => 'signup']);
     }
+    
+[*View in Context*][signup_start]
 
 The original code that created the Parse user has to be updated to use the data we stored in `$_SESSION`, and to add the
 verified phone number to the user's account.
@@ -265,6 +295,8 @@ verified phone number to the user's account.
     $user->setUsername($email);
     $user->setPassword($password);
     $user->set('phoneNumber', $phone);
+
+[*View in Context*][signup_data]
 
 The rest of the user creation stays the same. But we need to ensure this code is only reached when the user submits the 
 correct `code`, not just any code. 
@@ -286,6 +318,8 @@ Since we stored the request ID in `$_SESSION` we only need to pass the method th
         return true;
     }
     
+[*View in Context*][checkCode]
+    
 If the API response is unsuccessful, we'll add the error as a flash message. The calling code can use the return value
 of the method to determine if the check was successful or not. Now in our `signupAction()` we just add a call to 
 `checkCode()` before creating the user.
@@ -294,6 +328,8 @@ of the method to determine if the check was successful or not. Now in our `signu
         return $this->redirect()->toRoute('auth', ['action' => 'signup']);
     }
     
+[*View in Context*][signup_check]
+
 At this point we can start to see the advantage of `showVerifyIfNeeded()`. Should a user submit the incorrect 
 verification code, they'll be redirected back to the `signupAction()`, and if the verification is still active they'll 
 be prompted again. If they've entered an incorrect code too many times, or of the verification has timed out, they'll 
@@ -301,7 +337,7 @@ see the signup form and can start again. In either case the error will also be d
 
 ## Protecting Signin 
 Now that users have a verified phone number on their account, we can enable second factor authentication on signin. 
-Since we're using the `signinAction()` as a cheap way to do sign users out of the application, we have to relocate the 
+Since we're using the `signinAction()` as a [cheap way to do sign users out][signout] of the application, we have to relocate the 
 rather aggressive `ParseUser::logout()` so it doesn't logout users that are in the middle of a verification process. 
 If there's a Parse user and `$_SESSION['todo']['user']` has the same username, we need to sign the user out. Any other 
 condition is an inprocess signin.
@@ -311,8 +347,10 @@ condition is an inprocess signin.
         $_SESSION['todo']['user'] = null;
     }
 
-Using the same pattern as we did in the `signupAction()` we'll take any non-POST and show a verification prompt if 
-needed. And the same conditional handles starting the verification process on the initial signin request.
+[*View in Context*][signout_conditional]
+
+Using the same pattern as we did in the `signupAction()` we'll take any non-POST and show a [verification prompt if 
+needed][auth_signin]. And the same conditional handles starting the verification process on the initial signin request.
 
     if(!($this->request instanceof Request) OR !$this->request->isPost()){
         return $this->showVerifyIfNeeded();
@@ -320,12 +358,13 @@ needed. And the same conditional handles starting the verification process on th
     
     if(!$this->request->getPost('code')){
     //...
+    
+[*View in Context*][signin_conditional]    
 
 We'll put the original signin code in that conditional. Any incorrect username and password will just redirect to the 
 signin form, and the error will be passed in the flash messenger. But now we'll make sure the `$_SESSION` key we use to 
 track the signed in user is set to null, as we don't want just a correct username and password to signin the user.
 
-    ParseUser::logOut();
     try {
         $user = ParseUser::logIn($this->request->getPost('email'), $this->request->getPost('password'));
         $_SESSION['todo']['user'] = null;
@@ -334,12 +373,16 @@ track the signed in user is set to null, as we don't want just a correct usernam
         return $this->redirect()->toRoute('auth', ['action' => 'signin']);
     }
     
+[*View in Context*][signin_auth]
+    
 If the login is successful, then we'll start a verification process, just like the `signupAction()`. Only now the number
 will come from the authenticated user. Like before, regardless of the outcome of the verification process we'll redirect
 to the `signinAction()` and let `showVerifyIfNeeded()` handle the verification prompt. 
 
     $this->startVerification($user->get('phoneNumber'));
     return $this->redirect()->toRoute('auth', ['action' => 'signin']);
+    
+[*View in Context*][signin_verify]
     
 If the user provides a 'code', and there's a logged in user in the Parse session, the conditional is skipped. The code 
 is checked, and if invalid the user is redirected to the `signinAction()` where they are prompted again if the 
@@ -353,6 +396,8 @@ verification process is still active. If it is not, they have to start the login
     $_SESSION['todo']['user'] = $user->getUsername();
     $this->redirect()->toRoute('app');
     
+[*View in Context*][signin_check]
+    
 If the code is valid, the login success is stored in the `$_SESSION` just like before, and the user redirected to the 
 `AppController`. 
 
@@ -361,8 +406,8 @@ step further.
 
 ## Second Factor for Delete
 Our ToDo list items are pretty important. Should we walk away from our computer and not lock it, we wouldn't want some
-random co-worker to stop by and delete them all. We can prevent that catastrophic possibility by adding second factor
-authentication to the delete process of the ToDo list application.
+random co-worker to stop by and delete them all. We can prevent that catastrophic possibility by [adding second factor
+authentication to the delete process of the ToDo list application][delete_commit].
 
 Since this is the first time we're doing a verification process in the [`AppController`][app] we need to add a use 
 statements for the [`VerifyTrait`][trait]
@@ -371,6 +416,8 @@ statements for the [`VerifyTrait`][trait]
     {
         use VerifyTrait;
         //...
+
+[*View in Context*][app_trait]
 
 Our `deleteAction()` expects a POST with the ID of the todo item, queries Parse to find that item, and then destroys it.
 Once done, it redirects to the main `AppController` action which just renders a list of items to do.
@@ -383,6 +430,8 @@ Once done, it redirects to the main `AppController` action which just renders a 
         $this->flashMessenger()->addErrorMessage($e->getMessage());
     }
     $this->redirect()->toRoute('app');
+
+[*View in Context*][delete] 
  
 Following the pattern of signup and signin, we add a conditional to check if the user POSTed a `code`. If they didn't,
 the id is stored in the `$_SESSION`, we start a verification, then we redirect to the main app.
@@ -393,6 +442,8 @@ the id is stored in the `$_SESSION`, we start a verification, then we redirect t
         $this->redirect()->toRoute('app');
     }
     
+[*View in Context*][delete_conditional] 
+
 The only thing different this time is that we provide `startVerification()` with a URL that sets where the form is 
 submitted. This allows us to always redirect the `deleteAction()` back to the main `indexAction()`, but still have the 
 verification code submitted to the `deleteAction()`.
@@ -413,12 +464,16 @@ When a `code` is sent to the `deleteAction()` it's checked and if it's valid the
     
     $this->redirect()->toRoute('app');
     
+[*View in Context*][delete_check]
+
 Since there's never any view for the `deleteAction()`, every request is redirected to the main app action 
 `indexAction()`. It's there we add `showVerifyIfNeeded()` to handle prompting the user for a verification code.
 
     if($view = $this->showVerifyIfNeeded()){
         return $view;
     }
+    
+[*View in Context*][delete_show]
 
 ## Next Steps
 Adding second factor authentication to your application is not a complex process with Nexmo's Verify API. At this point 
@@ -442,21 +497,51 @@ follow.
 Now that you've seen how easy it is to add second factor authentication to signin or any other important part of 
 your application, add it to your application today and keep your user's accounts secure.
 
-[local_config]: config/autoload/local.php.dist
-[config_setup]: module/Todo/src/SetupController.php
-[parse_setup]: module/Todo/src/SetupController.php
-[schema]: schema.json
-[module_config]: module/Todo/config/module.config.php
-[app]: module/Todo/src/AppController.php
-[auth]: module/Todo/src/AuthController.php
+[local_config]: https://github.com/Nexmo/ToDo-Web/blob/master/config/autoload/local.php.dist
+[config_setup]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/SetupController.php#L40-L53
+[schema]: https://github.com/Nexmo/ToDo-Web/blob/master/schema.json
+[parse_setup]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/SetupController.php#L88-L107
+[module_config]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/config/module.config.php
+[app]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/AppController.php
+[auth]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/AuthController.php
+[parse_create]:https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/AuthController.php#L23-L25
+[parse_login]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/AuthController.php#L50-L51
+[redirect]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/AuthController.php#L52
 [client]: http://www.phillipshipley.com/2015/04/creating-a-php-nexmo-api-client-using-guzzle-web-service-client-part-1/
-[signup_template]: module/Todo/view/signup.phtml
+[signup_template]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/view/signup.phtml#L6-L7
+[auth_commit]: https://github.com/Nexmo/ToDo-Web/commit/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42#diff-5a5461e66ce9d6b08b64f818e3a65f6c
 [verify_request]: https://docs.nexmo.com/api-ref/verify
 [verify_check]: https://docs.nexmo.com/api-ref/verify/check
 [verify_quickstart]: https://developers.nexmo.com/Quickstarts/verify/verify/
 [verify_ref]: https://docs.nexmo.com/api-ref/verify
-[trait]: module/Todo/src/VerifyTrait.php
-[verify_template]: module/Todo/view/verify.phtml
-
-[signup_action]: module/Todo/src/Todo/Controller/AuthController.php#L14
-[flash_messenger]: view/layout/layout.phtml
+[signup_action]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L16-L67
+[signup_conditional]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L23
+[signup_session]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L25-L26
+[signup_ni]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L29-L39
+[flash_messenger]: https://github.com/Nexmo/ToDo-Web/blob/master/view/layout/layout.phtml#L36-L43
+[use_trait]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L8-L10
+[trait]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/VerifyTrait.php
+[trait_dispatch]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/VerifyTrait.php#L9-L24
+[startVerification]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/VerifyTrait.php#L26-L39
+[verify_template]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/view/verify.phtml
+[verifyPrompt]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/VerifyTrait.php#L41-L50
+[showVerifyIfNeeded]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/VerifyTrait.php#L52-L64
+[signup_show]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L18-L20
+[signup_verify]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L41-L42
+[signup_start]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L23-L43
+[signup_data]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L50-L57
+[checkCode]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/VerifyTrait.php#L66-L79
+[signup_check]: https://github.com/Nexmo/ToDo-Web/blob/d98ab5dce2a83f8f9bf7f54dff2ffed03047de42/module/Todo/src/AuthController.php#L46-L48
+[signout]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/AuthController.php#L43
+[signout_conditional]: https://github.com/Nexmo/ToDo-Web/blob/5a3f9b5f0d0847dbdd96844d0a91b91310fae02d/module/Todo/src/AuthController.php#L75-L78
+[auth_signin]: https://github.com/Nexmo/ToDo-Web/commit/5a3f9b5f0d0847dbdd96844d0a91b91310fae02d
+[signin_conditional]: https://github.com/Nexmo/ToDo-Web/blob/5a3f9b5f0d0847dbdd96844d0a91b91310fae02d/module/Todo/src/AuthController.php#L80-L84
+[signin_auth]: https://github.com/Nexmo/ToDo-Web/blob/5a3f9b5f0d0847dbdd96844d0a91b91310fae02d/module/Todo/src/AuthController.php#L85-L91
+[signin_verify]: https://github.com/Nexmo/ToDo-Web/blob/5a3f9b5f0d0847dbdd96844d0a91b91310fae02d/module/Todo/src/AuthController.php#L93-L94
+[signin_check]: https://github.com/Nexmo/ToDo-Web/blob/5a3f9b5f0d0847dbdd96844d0a91b91310fae02d/module/Todo/src/AuthController.php#L97-L103
+[delete_commit]: https://github.com/Nexmo/ToDo-Web/commit/21ed2bca4a069c8f660150e286fac8b659bb7a75#diff-9468e6b6d5f46e314916c360ca4e33dc
+[app_trait]: https://github.com/Nexmo/ToDo-Web/blob/21ed2bca4a069c8f660150e286fac8b659bb7a75/module/Todo/src/AppController.php#L12-L14
+[delete]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/AppController.php#L89-L97
+[delete_conditional]: https://github.com/Nexmo/ToDo-Web/blob/21ed2bca4a069c8f660150e286fac8b659bb7a75/module/Todo/src/AppController.php#L95-L99
+[delete_check]: https://github.com/Nexmo/ToDo-Web/blob/21ed2bca4a069c8f660150e286fac8b659bb7a75/module/Todo/src/AppController.php#L101-L113
+[delete_show]: https://github.com/Nexmo/ToDo-Web/blob/21ed2bca4a069c8f660150e286fac8b659bb7a75/module/Todo/src/AppController.php#L48-L50
