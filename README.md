@@ -9,6 +9,13 @@ Our web application is a simple todo list. All the application data, and even th
 will allow us to focus on the code that powers 2FA and abstract away the code needed to persist todo items and store 
 passwords. It also means running this example app yourself only requires PHP and a Parse account.
 
+If you're comfortable with modern PHP frameworks, you should be able to follow this how-to in your own development 
+environment. Once you clone the master branch of the repository, use [`composer install`][composer] to include the 
+dependencies. If you want to skip to a specific section, just checkout the associated git tag.
+
+If PHP is not your language of choice, no problem. The concepts in general are common to any web application. You'll 
+find how to add second verification to a web application even when not following along on your own.
+
 All service credentials are stored in a [local config file][local_config] which can be created by hand or by running
 [`$php public/index.php setup config`][config_setup]
 
@@ -497,6 +504,7 @@ follow.
 Now that you've seen how easy it is to add second factor authentication to signin or any other important part of 
 your application, add it to your application today and keep your user's accounts secure.
 
+[composer]: https://getcomposer.org/doc/00-intro.md
 [local_config]: https://github.com/Nexmo/ToDo-Web/blob/master/config/autoload/local.php.dist
 [config_setup]: https://github.com/Nexmo/ToDo-Web/blob/master/module/Todo/src/SetupController.php#L40-L53
 [schema]: https://github.com/Nexmo/ToDo-Web/blob/master/schema.json
