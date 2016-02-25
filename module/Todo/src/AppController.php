@@ -8,6 +8,7 @@ use Parse\ParseUser;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Stdlib\RequestInterface as Request;
 use Zend\Stdlib\ResponseInterface as Response;
+use Zend\View\Model\ViewModel;
 
 class AppController extends AbstractActionController
 {
@@ -94,8 +95,8 @@ class AppController extends AbstractActionController
 
         if(!$this->request->getPost('code')){
             $_SESSION['todo']['delete'] = $this->request->getPost('id');
-            $this->startVerification($this->user->get('phoneNumber'), '/app/delete');
-            $this->redirect()->toRoute('app');
+            $this->startVerification($this->user->get('phoneNumber'), '/app/delete', $this->user);
+            return $this->redirect()->toRoute('app');
         }
 
         $code = $this->request->getPost('code');
@@ -111,5 +112,34 @@ class AppController extends AbstractActionController
         }
 
         $this->redirect()->toRoute('app');
+    }
+
+    public function totpAction()
+    {
+        /* @var $gauth \Google\Authenticator\GoogleAuthenticator */
+        $gauth = $this->getServiceLocator()->get('GoogleAuthenticator');
+
+        //check code
+        if($code = $this->request->getPost('code')){
+            if($gauth->checkCode($_SESSION['todo']['totp'], $code)){
+                $this->user->set('totp', $_SESSION['todo']['totp']);
+                $this->user->save();
+                unset($_SESSION['todo']['totp']);
+                $this->redirect()->toRoute('app');
+            } else {
+                $this->flashMessenger()->addErrorMessage('Code does not match.');
+                $this->redirect()->toRoute('app', [
+                    'action' => 'totp'
+                ]);
+            }
+        }
+
+        if(empty($_SESSION['todo']['totp'])){
+            $_SESSION['todo']['totp'] = $gauth->generateSecret();
+        }
+
+        return new ViewModel([
+            'link' => $gauth->getUrl($this->user->getUsername(), 'nexmo.ninja', $_SESSION['todo']['totp']),
+        ]);
     }
 }

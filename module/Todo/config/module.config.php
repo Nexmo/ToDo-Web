@@ -39,6 +39,7 @@ return [
             'todo/auth/signup' => __DIR__ . '/../view/signup.phtml',
             'todo/auth/forgot'   => __DIR__ . '/../view/forgot.phtml',
             'todo/app/index'   => __DIR__ . '/../view/index.phtml',
+            'todo/app/totp'   => __DIR__ . '/../view/totp.phtml',
             'verify'   => __DIR__ . '/../view/verify.phtml',
         ]
     ],
@@ -46,6 +47,9 @@ return [
         'abstract_factories' => [
             'Todo\NexmoFactory',
         ],
+        'invokables' => [
+            'GoogleAuthenticator' => '\Google\Authenticator\GoogleAuthenticator'
+        ]
     ],
     'console' => [
         'router' => [

@@ -90,7 +90,7 @@ class AuthController extends AbstractActionController
                 return $this->redirect()->toRoute('auth', ['action' => 'signin']);
             }
 
-            $this->startVerification($user->get('phoneNumber'));
+            $this->startVerification($user->get('phoneNumber'), null, $user);
             return $this->redirect()->toRoute('auth', ['action' => 'signin']);
         }
 

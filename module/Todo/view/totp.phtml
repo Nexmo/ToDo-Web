@@ -1,0 +1,15 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <img src="<?php echo $this->link;?>" class="img-responsive center-block img-thumbnail"/>
+        </div>
+    </div>
+
+    <form class="form-signin" method="post" action="<?php echo $this->url ?>">
+        <h2 class="form-signin-heading">Enable Google Authenticator</h2>
+        <p>Confirm by providing the current code.</p>
+        <label for="code" class="sr-only">Code</label>
+        <input type="text" id="code" name="code" class="form-control first" placeholder="1234" required autofocus>
+        <button class="btn btn-lg btn-primary btn-block last" type="submit">Confirm</button>
+    </form>
+</div>
